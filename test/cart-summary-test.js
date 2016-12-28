@@ -37,7 +37,7 @@ describe('getTax', function () {
   beforeEach(function () {
     sinon.stub(tax, 'calculate', function(subtotal, state, done) {
       // setTimeout is used to mimic the asynchronous behavior of this method
-      // since in reality it will make an asynchronous API call to a tax service. 
+      // since in reality it will make an asynchronous API call to a tax service.
       setTimeout(function () {
         done({
           amount: 30
@@ -46,6 +46,7 @@ describe('getTax', function () {
     });
   });
 
+  // restores the original tax.calculate
   afterEach(function () {
     tax.calculate.restore();
   });
@@ -67,6 +68,9 @@ describe('getTax', function () {
 
     cartSummary.getTax('NY', function(taxAmount) {
       expect(taxAmount).to.equal(30);
+      // verify that tax.calculate was called with the correct subtotal and state as opposed to hardcoded values
+      expect(tax.calculate.getCall(0).args[0]).to.equal(300);
+      expect(tax.calculate.getCall(0).args[1]).to.equal('NY');
       done();
     });
   });
